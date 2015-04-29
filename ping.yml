@@ -1,0 +1,7 @@
+---
+
+- hosts: all
+  sudo: True
+  tasks:
+    - name: ping all available hosts
+      ping:
