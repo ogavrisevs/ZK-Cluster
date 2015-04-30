@@ -1,4 +1,5 @@
 
+# max 9
 instance_count = 3
 
 servers = []
@@ -31,9 +32,8 @@ Vagrant.configure("2") do |config|
     end
   end
 
-
   #
-  # And one ansible host for provisioning
+  # And one ansible host for provisioning ZK nodes
   #
   config.vm.define "ansible" do |ansible|
     ansible.vm.box = "Centos.6.5"
@@ -42,13 +42,38 @@ Vagrant.configure("2") do |config|
     ansible.vm.box_url = "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
 
     #
-    # lets test can we reache all nodes
+    # istall ansible and dependent roles from Ansible Galaxy
+    #
+    ansible.vm.provision :shell, :inline => "yum install -y ansible"
+    ansible.vm.provision :shell, :inline => "/usr/bin/ansible-galaxy install --force --role-file /vagrant/requirements.yml"
+
+    #
+    # Lets test can we reache zk nodes from vagrant host (ansible is req. on Vagrant host!)
     #
     ansible.vm.provision "ansible" do |ansible_prov|
       ansible_prov.playbook = "ping.yml"
       ansible_prov.host_key_checking = "false"
       ansible_prov.limit = "node*"
     end
+
+    #
+    # Preparing ansible
+    #
+    ansible.vm.provision :shell, :inline =>
+      "   chmod 600 /vagrant/.ssh/id_rsa \
+       && echo 'export ANSIBLE_HOST_KEY_CHECKING=False' >> /home/vagrant/.bashrc \
+       && echo '192.168.100.10[0:%s]' > /vagrant/inventory" % (instance_count-1).to_s
+
+    #
+    # Run ansible inside VM, install dep. for ZK cluster
+    #
+    ansible.vm.provision :shell, :inline =>
+      "/usr/bin/ansible-playbook \
+         --inventory-file=/vagrant/inventory \
+         --user=vagrant \
+         --private-key=/vagrant/.ssh/id_rsa \
+         /vagrant/zk.yml
+      "
   end
 end
 
