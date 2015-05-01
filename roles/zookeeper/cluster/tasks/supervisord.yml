@@ -1,0 +1,14 @@
+---
+
+- name: install supervisor package
+  yum:
+    name: supervisor
+    state: present
+
+- name: create supervisor configuration file
+  template:
+    src: supervisord.conf.j2
+    dest: /etc/supervisord.conf
+    force: yes
+  notify:
+    - restart supervisord

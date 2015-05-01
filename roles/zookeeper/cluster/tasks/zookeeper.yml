@@ -1,0 +1,43 @@
+---
+
+- name: check if zookeeper is already installed
+  stat:
+    path: "{{ exhibitor_dir }}/zookeeper/{{ zookeeper_archive_name }}/bin/zkServer.sh"
+  register: zookeeper_installed
+
+- name: download zookeeper
+  get_url:
+    url: "{{ zookeeper_download_url }}"
+    dest: "/tmp/{{ zookeeper_archive_name }}"
+  when: not zookeeper_installed.stat.exists
+
+- name: create zookeeper home
+  file:
+    path: "{{ exhibitor_dir }}/zookeeper"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  when: not zookeeper_installed.stat.exists
+
+- name: extract zookeeper archive
+  unarchive:
+    src: "/tmp/{{ zookeeper_archive_name }}"
+    dest: "{{ exhibitor_dir }}/zookeeper"
+    copy: no
+  when: not zookeeper_installed.stat.exists
+
+- name: create init-script
+  copy:
+    src: zoo.cfg
+    dest: "{{ exhibitor_dir }}/zookeeper/{{ zookeeper_archive_name }}/conf/zoo.cfg"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+
+- name: fix ownership
+  file:
+    state: directory
+    path: "{{ exhibitor_dir }}/zookeeper/{{ zookeeper_archive_name }}"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    recurse: yes
+  when: not zookeeper_installed.stat.exists

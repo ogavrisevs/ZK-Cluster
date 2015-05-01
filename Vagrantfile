@@ -1,5 +1,5 @@
 
-# max 9
+# max 9 [3 / 5 / 7 / 9]
 instance_count = 3
 
 servers = []
@@ -62,6 +62,8 @@ Vagrant.configure("2") do |config|
     ansible.vm.provision :shell, :inline =>
       "   chmod 600 /vagrant/.ssh/id_rsa \
        && echo 'export ANSIBLE_HOST_KEY_CHECKING=False' >> /home/vagrant/.bashrc \
+       && rm -rf /root/ansible-modules-extras \
+       && git clone https://github.com/ansible/ansible-modules-extras.git /root/ansible-modules-extras \
        && echo '192.168.100.10[0:%s]' > /vagrant/inventory" % (instance_count-1).to_s
 
     #
@@ -72,6 +74,7 @@ Vagrant.configure("2") do |config|
          --inventory-file=/vagrant/inventory \
          --user=vagrant \
          --private-key=/vagrant/.ssh/id_rsa \
+         --module-path=/root/ansible-modules-extras/packaging/language/ \
          /vagrant/zk.yml
       "
   end

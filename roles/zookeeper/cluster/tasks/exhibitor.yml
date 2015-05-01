@@ -1,0 +1,68 @@
+---
+
+- name: check if symbolic link to jps exists
+  stat:
+    path: "/usr/bin/jps"
+  register: jps_link_exists
+
+- name: missing jps link workaround
+  file:
+    src: /usr/java/default/bin/jps
+    dest: /usr/bin/jps
+    state: link
+  when: not jps_link_exists.stat.exists
+
+- name: create exhibitor directories
+  file:
+    path: "{{ exhibitor_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  with_items:
+    - bin
+    - conf
+    - zookeeper
+
+- name: create exhibitor log directory
+  file:
+    path: "{{ exhibitor_logs }}"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+
+- name: install yum pkg.
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - libxml2-devel
+    - libxslt-devel
+    - python-devel
+
+- name: install python req packages for maven_artifact module
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - lxml
+
+#
+# This module is still not released
+# So we will loaded it manualy (by cloning ansible-modules-extras repo and pointing ansible-playbook)
+#
+- name: download exhibitor
+  maven_artifact:
+    repository_url: "{{ exhibitor_mvn_repo }}"
+    group_id: "{{ exhibitor_group_id }}"
+    artifact_id: "{{ exhibitor_artifact_id }}"
+    version: "{{ exhibitor_version }}"
+    dest: "{{ exhibitor_dir }}/bin/{{ exhibitor_jar }}"
+
+- name: create exhibitor configuration
+  template:
+    src: exhibitor.properties.j2
+    dest: "{{ exhibitor_dir }}/conf/exhibitor.properties"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+

@@ -1,0 +1,15 @@
+---
+
+- name: create zookeeper service group
+  group:
+    name: "{{ zookeeper_group }}"
+    system: yes
+    state: present
+
+- name: create zookeeper service user
+  user:
+    name: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    shell: /bin/false
+    system: yes
+    home: "{{ exhibitor_dir }}"

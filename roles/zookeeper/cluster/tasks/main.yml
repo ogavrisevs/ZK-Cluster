@@ -1,0 +1,6 @@
+---
+
+  - include: user.yml
+  - include: zookeeper.yml
+  - include: exhibitor.yml
+  - include: supervisord.yml

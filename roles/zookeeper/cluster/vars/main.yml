@@ -1,0 +1,15 @@
+---
+
+  exhibitor_group_id: com.netflix.exhibitor
+  exhibitor_artifact_id: exhibitor-standalone
+  exhibitor_dir: /srv/exhibitor
+  exhibitor_logs: /var/log/exhibitor
+  exhibitor_jar: "{{ exhibitor_artifact_id }}-{{ exhibitor_version }}.jar"
+  exhibitor_mvn_repo: "http://dl.bintray.com/ogavrisevs/maven"
+
+  zookeeper_data_path: /var/lib/zookeeper
+  zookeeper_apache_mirror: "http://ftp.ps.pl/pub/apache/zookeeper"
+
+  zookeeper_archive_name: "zookeeper-{{ zookeeper_version }}.tar.gz"
+  zookeeper_download_dest: "/tmp/{{ zookeeper_archive_name }}.tar.gz"
+  zookeeper_download_url: "{{ zookeeper_apache_mirror }}/zookeeper-{{ zookeeper_version }}/{{ zookeeper_archive_name }}"
