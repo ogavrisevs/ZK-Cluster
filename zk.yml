@@ -1,7 +1,0 @@
----
-
-- hosts: all
-  sudo: True
-  roles:
-    - { role: java, java_packages: ["java-1.8.0-openjdk-devel"] }
-    - { role: zookeeper/cluster }

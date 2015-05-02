@@ -42,10 +42,8 @@
 
 - name: install python req packages for maven_artifact module
   pip:
-    name: "{{ item }}"
+    name: "lxml"
     state: present
-  with_items:
-    - lxml
 
 #
 # This module is still not released

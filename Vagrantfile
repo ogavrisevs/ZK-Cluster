@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
     ansible.vm.box_url = "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
 
     #
-    # istall ansible and dependent roles from Ansible Galaxy
+    # Install ansible and dependent roles from Ansible Galaxy
     #
     ansible.vm.provision :shell, :inline => "yum install -y ansible"
     ansible.vm.provision :shell, :inline => "/usr/bin/ansible-galaxy install --force --role-file /vagrant/requirements.yml"
@@ -67,7 +67,7 @@ Vagrant.configure("2") do |config|
        && echo '192.168.100.10[0:%s]' > /vagrant/inventory" % (instance_count-1).to_s
 
     #
-    # Run ansible inside VM, install dep. for ZK cluster
+    # Run ansible inside VM and install ZK cluster
     #
     ansible.vm.provision :shell, :inline =>
       "/usr/bin/ansible-playbook \
@@ -75,7 +75,21 @@ Vagrant.configure("2") do |config|
          --user=vagrant \
          --private-key=/vagrant/.ssh/id_rsa \
          --module-path=/root/ansible-modules-extras/packaging/language/ \
-         /vagrant/zk.yml
+         --tags=install \
+         /vagrant/zk-install.yml
+      "
+
+    #
+    # Test created ZK cluster
+    #
+    ansible.vm.provision :shell, :inline =>
+      "/usr/bin/ansible-playbook \
+         --inventory-file=/vagrant/inventory \
+         --user=vagrant \
+         --private-key=/vagrant/.ssh/id_rsa \
+         --module-path=/root/ansible-modules-extras/packaging/language/ \
+         --tags=test \
+         /vagrant/zk-test.yml
       "
   end
 end

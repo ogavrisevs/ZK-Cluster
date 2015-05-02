@@ -1,0 +1,25 @@
+---
+
+- name: ensure git nad httpd is installed
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - httpd
+
+- name: clone test suit
+  git:
+    repo: https://github.com/phunt/zk-smoketest.git
+    dest: "{{ zookeeper_test_path }}"
+
+- name: lets run latencie against cluster
+  shell: "PYTHONPATH={{ zookeeper_test_path }}/lib.linux-x86_64-2.6 LD_LIBRARY_PATH={{ zookeeper_test_path }}/lib.linux-x86_64-2.6 {{ zookeeper_test_path }}/zk-latencies.py --servers={{ groups['all'] | join(':2181,')}}:2181"
+  register: latencietests_results
+
+- name: save latencie test results to file
+  copy:
+    content: "{{ latencietests_results.stdout }}"
+    dest: "/var/www/html/latencie_tests_results.log"
+  notify:
+    - restart httpd

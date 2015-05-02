@@ -13,3 +13,5 @@
   zookeeper_archive_name: "zookeeper-{{ zookeeper_version }}.tar.gz"
   zookeeper_download_dest: "/tmp/{{ zookeeper_archive_name }}.tar.gz"
   zookeeper_download_url: "{{ zookeeper_apache_mirror }}/zookeeper-{{ zookeeper_version }}/{{ zookeeper_archive_name }}"
+
+  zookeeper_test_path: "/home/vagrant/zk-smoketest"

@@ -4,3 +4,8 @@
   service:
     name: supervisord
     state: reloaded
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted

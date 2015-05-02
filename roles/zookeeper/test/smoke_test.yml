@@ -1,0 +1,19 @@
+---
+
+- name: ensure git and httpd is installed
+  yum:
+    name: git
+    state: present
+
+- name: clone test suit
+  git:
+    repo: https://github.com/phunt/zk-smoketest.git
+    dest: "{{ zookeeper_test_path }}"
+
+- name: lets run smoketests against cluster
+  shell: "PYTHONPATH={{ zookeeper_test_path }}/lib.linux-x86_64-2.6 LD_LIBRARY_PATH={{ zookeeper_test_path }}/lib.linux-x86_64-2.6 {{ zookeeper_test_path }}/zk-smoketest.py --servers={{ groups['all'] | join(':2181,')}}:2181"
+  register: smoketests_results
+
+- name: print smoketests results
+  debug:
+    msg: "{{ smoketests_results.stdout }}"

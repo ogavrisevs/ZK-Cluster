@@ -17,7 +17,6 @@
     state: directory
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
-  when: not zookeeper_installed.stat.exists
 
 - name: extract zookeeper archive
   unarchive:
@@ -29,9 +28,10 @@
 - name: create init-script
   copy:
     src: zoo.cfg
-    dest: "{{ exhibitor_dir }}/zookeeper/{{ zookeeper_archive_name }}/conf/zoo.cfg"
+    dest: "{{ exhibitor_dir }}/zookeeper/zookeeper-{{ zookeeper_version }}/conf/zoo.cfg"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
+  when: not zookeeper_installed.stat.exists
 
 - name: fix ownership
   file:

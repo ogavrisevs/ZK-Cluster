@@ -1,0 +1,7 @@
+---
+
+  - include: smoke_test.yml
+    tags: ['test', 'smoke']
+
+  - include: latencie_test.yml
+    tags: ['test', 'latencie']

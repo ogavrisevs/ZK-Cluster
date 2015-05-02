@@ -1,6 +1,15 @@
 ---
 
   - include: user.yml
+    tags: install
+
   - include: zookeeper.yml
+    tags: install
+
   - include: exhibitor.yml
+    tags: install
+
   - include: supervisord.yml
+    tags: install
+
+  - include: ./../test/main.yml
